@@ -1,4 +1,4 @@
-﻿module Shared.GameOfLifeTypes
+﻿namespace Shared.GameOfLifeTypes
 
 
 open System.Drawing
@@ -13,6 +13,8 @@ type Cell =    //Tuple
 type CellGrid =  //Record
     { Cells: Cell list
       Size: int }
+
+
 
 
 type FigureName = //when user wants to start with some predefined figure

@@ -6,5 +6,6 @@
   <ItemGroup>
     <Compile Include="Shared.fs" />
     <Compile Include="GameOfLifeTypes.fs" />
+    <Compile Include="Utils.fs" />
   </ItemGroup>
 </Project>
