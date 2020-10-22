@@ -45,4 +45,24 @@ let GetNeighbourCells (cell:Cell) (cells: Cell list) : Option<Cell> list =
                 findNeighbourCell i j
     } |> List.ofSeq
 
+let ChangeCellStateBasedOnNeighbours (cells: Option<Cell> list) (cell: Cell ) : Cell=
+    let CellIsAlive _cell =
+        match _cell with
+        |Some _ -> true
+        |None -> false
+
+    let amountOfAliveCellsAround = List.filter CellIsAlive cells
+    match amountOfAliveCellsAround.Length with
+    | (count) when count > 1 || count < 4 -> (Alive, snd cell)
+    | _  ->  (Dead, snd cell)
+
+let CalculateTick (cells: Cell list) : Cell list =
+//Any live cell with two or three live neighbours survives.
+//Any dead cell with three live neighbours becomes a live cell.
+//All other live cells die in the next generation. Similarly, all other dead cells stay dead.
+    seq{
+        for currentCell in cells do
+            let neighBours = GetNeighbourCells currentCell cells
+            ChangeCellStateBasedOnNeighbours neighBours currentCell
+    } |> List.ofSeq
 
