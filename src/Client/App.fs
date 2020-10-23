@@ -3,13 +3,19 @@ module App
 open Elmish
 open Elmish.React
 open Browser
+
 #if DEBUG
 open Elmish.Debug
 open Elmish.HMR
 #endif
 
+let timer initial =
+    let sub dispatch =
+        window.setInterval(dispatch ,  1000) |> ignore
+    Cmd.ofSub sub
+
 Program.mkProgram Index.init Index.update Index.view
-|> Program.withSubscription (fun model -> Cmd.ofSub(fun dispatch -> window.setInterval((fun _ -> dispatch Tick), 1000) |> ignore))
+|> Program.withSubscription timer
 #if DEBUG
 |> Program.withConsoleTrace
 #endif

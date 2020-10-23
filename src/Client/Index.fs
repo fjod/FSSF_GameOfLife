@@ -27,7 +27,7 @@ let init (): Model * Cmd<Msg> =
 
 let update (msg: Msg) (model: Model): Model * Cmd<Msg> =
     match msg with
-    | Tick time -> { model with Todos = todos }, Cmd.none //here we recalculate state of cells
+    | Tick _ -> { model with Grid = CalculateTick model.Grid.Cells }, Cmd.none //here we recalculate state of cells
 
 
 

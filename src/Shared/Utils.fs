@@ -56,13 +56,16 @@ let ChangeCellStateBasedOnNeighbours (cells: Option<Cell> list) (cell: Cell ) : 
     | (count) when count > 1 || count < 4 -> (Alive, snd cell)
     | _  ->  (Dead, snd cell)
 
-let CalculateTick (cells: Cell list) : Cell list =
+let CalculateTick (cells: Cell list) : CellGrid =
 //Any live cell with two or three live neighbours survives.
 //Any dead cell with three live neighbours becomes a live cell.
 //All other live cells die in the next generation. Similarly, all other dead cells stay dead.
-    seq{
+    let newCells = seq{
         for currentCell in cells do
             let neighBours = GetNeighbourCells currentCell cells
             ChangeCellStateBasedOnNeighbours neighBours currentCell
-    } |> List.ofSeq
+    }
+    let gridCells = List.ofSeq newCells
+    ToCellGrid gridCells (List.length cells/2)
+
 
