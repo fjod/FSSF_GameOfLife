@@ -7,7 +7,7 @@
     <ItemGroup>
         <None Include="index.html" />
         <None Include="paket.references" />
-        <Compile Include="Index.fs" />
+        <Compile Include="UI.fs" />
         <Compile Include="App.fs" />
         <None Include="Script1.fsx" />
     </ItemGroup>
