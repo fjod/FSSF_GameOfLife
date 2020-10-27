@@ -30,8 +30,8 @@ let update (msg: Msg) (model: Model): Model =
     match msg with
     | Tick _ ->
         { model with
-              Grid = CalculateTick model.Grid.Cells }
+              Grid = CalculateTick model.Grid }
 
 let mutable model = init()
 iter (update (Tick DateTime.Now)) &model
-iter (fun model -> { model with Grid = CalculateTick model.Grid.Cells }) &model
+iter (fun model -> { model with Grid = CalculateTick model.Grid }) &model
