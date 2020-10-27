@@ -11,7 +11,7 @@ open Elmish.HMR
 
 let timer initial =
     let sub dispatch =
-        window.setInterval(dispatch Index.Tick, 1000) |> ignore
+        window.setInterval((fun _ -> dispatch Index.Tick), 3000) |> ignore
     Cmd.ofSub sub
 
 

@@ -80,5 +80,6 @@ let view (model: Model) (dispatch: Msg -> unit) =
         ]
         Hero.body [] [
             generateGrid model
+            button [OnClick (fun _ -> dispatch Tick)] [str "Click!"]
             ]
     ]
