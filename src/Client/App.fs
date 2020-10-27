@@ -14,6 +14,8 @@ let timer initial =
         window.setInterval(dispatch ,  1000) |> ignore
     Cmd.ofSub sub
 
+
+
 Program.mkProgram Index.init Index.update Index.view
 |> Program.withSubscription timer
 #if DEBUG
