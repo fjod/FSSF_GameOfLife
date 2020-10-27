@@ -1,7 +1,9 @@
 ﻿namespace Shared.GameOfLifeTypes
-
-
-open System.Drawing
+type Point =
+    {
+        X:int
+        Y:int
+    }
 
 type CellStatus = //Discriminated Union
     | Dead

@@ -17,11 +17,10 @@ let todosApi =
     |> Remoting.buildProxy<ITodosApi>
 
 let init (): Model * Cmd<Msg> =
-    let model = GetRandomCellGrid 50
-    let grid = ToCellGrid model 50
+    let model = GetRandomCellGrid 10
+    let grid = ToCellGrid model 10
     let model = { Grid = grid }
     (model, Cmd.ofMsg (Tick DateTime.Now))
-
 
 
 
@@ -44,7 +43,7 @@ let navBrand =
         h3 [] [ str "Game of Life FSSF" ]
     ]
 
-let IsEqual (x: int) (y: int) = Math.Abs(x - y) < 0
+let IsEqual (x: int) (y: int) = Math.Abs(x - y) = 0
 
 let renderView (cells: Cell list) x y =
     let cell =
@@ -55,7 +54,8 @@ let renderView (cells: Cell list) x y =
     | Alive -> td [ Style [ Background "white" ] ] []
 
 let generateGrid (model: Model) =
-    let listOfCols = [ 0 .. model.Grid.Size ]
+    let listOfCols = [ 0 .. model.Grid.Size-1 ]
+    let listOfCols2 = [ 0 .. model.Grid.Size-1 ]
 
     table [] [
         thead [] [
@@ -68,7 +68,7 @@ let generateGrid (model: Model) =
             for row in listOfCols ->
                 tr [] [
                     yield th [] [ str (string row) ]
-                    for col in listOfCols -> renderView model.Grid.Cells row col
+                    for col2 in listOfCols2 -> renderView model.Grid.Cells row col2
                 ]
         ]
     ]
@@ -81,7 +81,5 @@ let view (model: Model) (dispatch: Msg -> unit) =
                 Container.container [] [ navBrand ]
             ]
         ]
-        Hero.body [] [
-            generateGrid model
-        ]
+        Hero.body [] [ generateGrid model ]
     ]

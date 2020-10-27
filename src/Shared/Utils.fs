@@ -1,14 +1,19 @@
 ﻿module Shared.Utils
 
-open System.Drawing
+
 open Shared.GameOfLifeTypes
 
+let CreatePoint (x:int) (y:int) : Point =
+    {
+     X = x
+     Y = y
+    }
 
 let CreateCell x y isDead : Cell=
     if isDead then
-        Dead, Point(x,y)
+        Dead, CreatePoint x y
     else
-        Alive, Point(x,y)
+        Alive, CreatePoint x y
 
 let GetRandomCellGrid size =
     let rnd = System.Random()
@@ -24,18 +29,20 @@ let ToCellGrid cells size : CellGrid =
     }
 
 let cellFinder _x _y (cell : Cell) =
-            System.Math.Abs((snd cell).X-  _x) < 1 && System.Math.Abs((snd cell).Y-  _y) < 1
+            let IsEqual (x: int) (y: int) = System.Math.Abs(x - y)= 0
+            IsEqual (snd cell).X _x  && IsEqual (snd cell).Y _y
 
 let GetNeighbourCells (cell:Cell) (cells: Cell list) : Option<Cell> list =
 
     //find cell around selected cells one by one; this method returns one cell next to the selected
     let findNeighbourCell x y  : Option<Cell> =
-        let ret = List.find (cellFinder x y) cells
-        let amount = List.length cells / 2
+
+        let amount = System.Math.Sqrt (float cells.Length)
+
         match x, y with
-            | (var1, var2) when var1<=0 || var2 <= 0 -> None
-            | (var1, var2) when var1>= amount || var2 >= amount -> None
-            | _, _ -> Some ret
+            | (var1, var2) when var1 <0|| var2 < 0 -> None
+            | (var1, var2) when var1>= (int amount) || var2 >= (int amount) -> None
+            | _, _ -> Some (List.find (cellFinder x y) cells)
 
     let Row = [(snd cell).X-1..(snd cell).X+1]
     let Col = [(snd cell).Y-1..(snd cell).Y+1]
@@ -60,12 +67,15 @@ let CalculateTick (cells: Cell list) : CellGrid =
 //Any live cell with two or three live neighbours survives.
 //Any dead cell with three live neighbours becomes a live cell.
 //All other live cells die in the next generation. Similarly, all other dead cells stay dead.
-    let newCells = seq{
-        for currentCell in cells do
-            let neighBours = GetNeighbourCells currentCell cells
-            ChangeCellStateBasedOnNeighbours neighBours currentCell
-    }
-    let gridCells = List.ofSeq newCells
-    ToCellGrid gridCells (List.length cells/2)
+    let amount = System.Math.Sqrt (float cells.Length)
+    ToCellGrid cells (int amount)
+//    let newCells = seq{
+//        for currentCell in cells do
+//            let neighBours = GetNeighbourCells currentCell cells
+//            ChangeCellStateBasedOnNeighbours neighBours currentCell
+//    }
+//    let gridCells = List.ofSeq newCells
+//    let amount = System.Math.Sqrt (float cells.Length)
+//    ToCellGrid gridCells (int amount)
 
 
