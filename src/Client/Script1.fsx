@@ -34,3 +34,4 @@ let update (msg: Msg) (model: Model): Model =
 
 let mutable model = init()
 iter (update (Tick DateTime.Now)) &model
+iter (fun model -> { model with Grid = CalculateTick model.Grid.Cells }) &model
