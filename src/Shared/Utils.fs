@@ -1,4 +1,4 @@
-﻿module Shared.Utils
+module Shared.Utils
 
 
 open Shared.GameOfLifeTypes
@@ -63,12 +63,16 @@ let ChangeCellStateBasedOnNeighbours (cells: Option<Cell> list) (cell: Cell ) : 
     | (count) when count > 1 || count < 4 -> (Alive, snd cell)
     | _  ->  (Dead, snd cell)
 
-let CalculateTick (cells: Cell list) : CellGrid =
+let CalculateTick (grid: CellGrid) : CellGrid =
 //Any live cell with two or three live neighbours survives.
 //Any dead cell with three live neighbours becomes a live cell.
 //All other live cells die in the next generation. Similarly, all other dead cells stay dead.
-    let amount = System.Math.Sqrt (float cells.Length)
-    ToCellGrid cells (int amount)
+    let amount = System.Math.Sqrt (float grid.Cells.Length)
+    let invert ((status, coords): Cell) =
+        match status with
+        | Alive -> Dead, coords
+        | Dead -> Alive, coords
+    ToCellGrid (grid.Cells |> List.map invert) grid.Size
 //    let newCells = seq{
 //        for currentCell in cells do
 //            let neighBours = GetNeighbourCells currentCell cells

@@ -9,29 +9,26 @@ open Shared.Utils
 
 type Model = { Grid: CellGrid }
 
-type Msg = Tick of DateTime
+type Msg = Tick
 
 let todosApi =
     Remoting.createApi ()
     |> Remoting.withRouteBuilder Route.builder
     |> Remoting.buildProxy<ITodosApi>
 
-let init (): Model * Cmd<Msg> =
+let init (): Model =
     let model = GetRandomCellGrid 10
     let grid = ToCellGrid model 10
     let model = { Grid = grid }
-    (model, Cmd.ofMsg (Tick DateTime.Now))
+    model
 
 
-
-let update (msg: Msg) (model: Model): Model * Cmd<Msg> =
+let update (msg: Msg) (model: Model): Model =
     match msg with
-    | Tick _ ->
+    | Tick ->
         { model with
-              Grid = CalculateTick model.Grid.Cells },
-        Cmd.none //here we recalculate state of cells
-
-
+              Grid = CalculateTick model.Grid
+        }
 
 open Fable.React
 open Fable.React.Props
@@ -81,5 +78,8 @@ let view (model: Model) (dispatch: Msg -> unit) =
                 Container.container [] [ navBrand ]
             ]
         ]
-        Hero.body [] [ generateGrid model ]
+        Hero.body [] [
+            generateGrid model
+            button [OnClick (fun _ -> dispatch Tick)] [str "Click!"]
+            ]
     ]

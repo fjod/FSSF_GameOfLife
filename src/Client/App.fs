@@ -11,12 +11,12 @@ open Elmish.HMR
 
 let timer initial =
     let sub dispatch =
-        window.setInterval(dispatch ,  1000) |> ignore
+        window.setInterval((fun _ -> dispatch Index.Tick), 3000) |> ignore
     Cmd.ofSub sub
 
 
 
-Program.mkProgram Index.init Index.update Index.view
+Program.mkSimple Index.init Index.update Index.view
 |> Program.withSubscription timer
 #if DEBUG
 |> Program.withConsoleTrace
