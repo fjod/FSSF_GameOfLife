@@ -1,4 +1,4 @@
-﻿namespace Shared.GameOfLifeTypes
+namespace Shared.GameOfLifeTypes
 type Point =
     {
         X:int
@@ -8,13 +8,17 @@ type Point =
 type CellStatus = //Discriminated Union
     | Dead
     | Alive
+    | DeadOnNextTick
 
 type Cell =    //Tuple
     CellStatus*Point
 
 type CellGrid =  //Record
     { Cells: Cell list
-      Size: int }
+      Size: int
+      LowerBound : int
+      UpperBound : int
+      }
 
 
 

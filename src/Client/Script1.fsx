@@ -21,8 +21,8 @@ let iter f (model:byref<Model>) =
     model
 
 let init (): Model =
-    let model = GetRandomCellGrid 10
-    let grid = ToCellGrid model 10
+    let model = GetRandomCellGrid 5
+    let grid = ToCellGrid model 5
     let model = { Grid = grid }
     model
 
