@@ -21,8 +21,8 @@ let iter f (model:byref<Model>) =
     model
 
 let init (): Model =
-    let model = GetRandomCellGrid 5
-    let grid = ToCellGrid model 5
+    let model = GetRandomCellGrid 3
+    let grid = ToCellGrid model 3
     let model = { Grid = grid }
     model
 
@@ -34,4 +34,7 @@ let update (msg: Msg) (model: Model): Model =
 
 let mutable model = init()
 iter (update (Tick DateTime.Now)) &model
+iter (fun model -> { model with Grid = CalculateTick model.Grid }) &model
+iter (fun model -> { model with Grid = CalculateTick model.Grid }) &model
+iter (fun model -> { model with Grid = CalculateTick model.Grid }) &model
 iter (fun model -> { model with Grid = CalculateTick model.Grid }) &model

@@ -47,9 +47,9 @@ let renderView (cells: Cell list) x y =
         List.find (fun (c: Cell) -> IsEqual (snd c).X x && IsEqual (snd c).Y y) cells
 
     match fst cell with
-    | Dead -> td [ Style [ Background "black" ] ] []
-    | Alive  -> td [ Style [ Background "white" ] ] []
-    | DeadOnNextTick -> td [ Style [ Background "white" ] ] []
+    | Dead -> td [ Style [ Background "white" ] ] []
+    | Alive  -> td [ Style [ Background "black" ] ] []
+    | DeadOnNextTick -> td [ Style [ Background "black" ] ] []
  
 let generateGrid (model: Model) =
     let listOfCols = [ 0 .. model.Grid.Size-1 ]
@@ -81,6 +81,6 @@ let view (model: Model) (dispatch: Msg -> unit) =
         ]
         Hero.body [] [
             generateGrid model
-            button [OnClick (fun _ -> dispatch Tick)] [str "Click!"]
+            //button [OnClick (fun _ -> dispatch Tick)] [str "Click!"]
             ]
     ]
