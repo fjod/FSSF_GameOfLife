@@ -48,8 +48,9 @@ let renderView (cells: Cell list) x y =
 
     match fst cell with
     | Dead -> td [ Style [ Background "black" ] ] []
-    | Alive -> td [ Style [ Background "white" ] ] []
-
+    | Alive  -> td [ Style [ Background "white" ] ] []
+    | DeadOnNextTick -> td [ Style [ Background "white" ] ] []
+ 
 let generateGrid (model: Model) =
     let listOfCols = [ 0 .. model.Grid.Size-1 ]
     let listOfCols2 = [ 0 .. model.Grid.Size-1 ]

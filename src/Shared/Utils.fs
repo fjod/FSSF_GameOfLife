@@ -44,24 +44,30 @@ let cellFinder _x _y (cell : Cell) =
             IsEqual (snd cell).X _x  && IsEqual (snd cell).Y _y
 
             //cell to find neighbours around
-                               //all list                                             
+                               //list of all cells                                           
 let GetNeighbourCells (cell:Cell) (cells: CellGrid) : Option<Cell> list =
 
     //find cell around selected cells one by one; this method returns one cell next to the selected
-    let findNeighbourCell x y  : Option<Cell> =       
+    let findNeighbourCell (p:Point)  : Option<Cell> =       
 
-        match x, y with
+        match p.X, p.Y with
             | (var1, var2) when var1 < cells.LowerBound|| var2 < cells.LowerBound -> None
             | (var1, var2) when var1>= cells.UpperBound || var2 >= cells.UpperBound -> None
-            | _, _ -> Some (List.find (cellFinder x y) cells.Cells)
+            | _, _ -> Some (List.find (cellFinder p.X p.Y) cells.Cells)
 
     let Row = [(snd cell).X-1..(snd cell).X+1]
-    let Col = [(snd cell).Y-1..(snd cell).Y+1]
-    seq {
-        for i in Row do
-            for j in Col do
-                findNeighbourCell i j
-    } |> List.ofSeq
+    let Col = [(snd cell).Y-1..(snd cell).Y+1]    
+    
+    let l1 = seq {
+       for i in Row do
+           for j in Col do
+               CreatePoint i j
+    } 
+    let l11 = List.ofSeq l1
+    let l2 = List.except [CreatePoint (snd cell).X (snd cell).Y] l11 //must exclude the cell itself from here!
+    let l3 = List.map findNeighbourCell l2 //find if there is a cell on this coordinate
+    l3
+    
 
 let ChangeCellStateBasedOnNeighbours (cells: Option<Cell> list) (cell: Cell ) : Cell=
     let CellIsAlive _cell =
@@ -74,17 +80,22 @@ let ChangeCellStateBasedOnNeighbours (cells: Option<Cell> list) (cell: Cell ) : 
         //All other live cells die in the next generation. Similarly, all other dead cells stay dead.
 
     let amountOfAliveCellsAround = List.filter CellIsAlive cells
-    match amountOfAliveCellsAround.Length with
-    | (count) when count > 1 || count < 4 -> (Alive, snd cell)
-    | _  ->  (DeadOnNextTick, snd cell)
+    match amountOfAliveCellsAround.Length, fst cell with
+    | (count,Alive) when count > 1 && count < 4 -> (Alive, snd cell)
+    | _  ->
+       match fst cell with
+       | (if its already dead return dead!)
+    //(DeadOnNextTick, snd cell)
 
 let testCalc (grid:CellGrid) =
     seq{
         for currentCell in grid.Cells do
             match fst currentCell with
-            | DeadOnNextTick -> (Dead, snd currentCell)
+            | DeadOnNextTick ->
+                    (Dead, snd currentCell)
             | _ -> let neighBours = GetNeighbourCells currentCell grid
                    ChangeCellStateBasedOnNeighbours neighBours currentCell
+            
     }
 
 let CalculateTick (grid: CellGrid) : CellGrid = 

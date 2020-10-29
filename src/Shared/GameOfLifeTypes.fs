@@ -38,3 +38,4 @@ type Figure = { //record to store predefined type cell' coordinates and statuses
     FigureType : FigureName
     Cells : Cell list
 }
+
