@@ -3,6 +3,7 @@ module Index
 open System
 open Elmish
 open Fable.Remoting.Client
+open Fulma
 open Shared.GameOfLifeTypes
 open Shared
 open Shared.Utils
@@ -37,25 +38,34 @@ open Fulma
 let navBrand =
     Navbar.Brand.div [] [
         img [ Src "/favicon.png"; Alt "FSSF" ]
-        h3 [] [ str "Game of Life FSSF" ]
+        h1 [] [ str "Game of Life FSSF" ]
     ]
 
 let IsEqual (x: int) (y: int) = Math.Abs(x - y) = 0
 
 let renderView (cells: Cell list) x y =
     let cell =
-        List.find (fun (c: Cell) -> IsEqual (snd c).X x && IsEqual (snd c).Y y) cells
+        List.find (fun (c: Cell) ->  (snd c).X = x &&  (snd c).Y = y) cells
+        //List.find (fun (c: Cell) -> IsEqual (snd c).X x && IsEqual (snd c).Y y) cells
 
     match fst cell with
-    | Dead -> td [ Style [ Background "white" ] ] []
-    | Alive  -> td [ Style [ Background "black" ] ] []
-    | DeadOnNextTick -> td [ Style [ Background "black" ] ] []
- 
+    | Dead -> td [ Style [ Background "white"
+                           FontSize 50 ]
+                           ] [ str "***"]
+    | Alive  -> td [ Style [ Background "black"
+                             FontSize 50 ] ]
+                    [str " * "]
+    | DeadOnNextTick -> td [ Style [ Background "white"
+                                     FontSize 50 ] ] [str " * "]
+
 let generateGrid (model: Model) =
     let listOfCols = [ 0 .. model.Grid.Size-1 ]
     let listOfCols2 = [ 0 .. model.Grid.Size-1 ]
 
-    table [] [
+    table [ Style [Height 100.
+
+
+                         ] ] [
         thead [] [
             tr [] [
                 yield th [] []
@@ -80,7 +90,7 @@ let view (model: Model) (dispatch: Msg -> unit) =
             ]
         ]
         Hero.body [] [
-            generateGrid model
+                  Container.container [] [ generateGrid model ]
             //button [OnClick (fun _ -> dispatch Tick)] [str "Click!"]
             ]
     ]
