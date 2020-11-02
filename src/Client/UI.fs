@@ -8,7 +8,10 @@ open Shared.GameOfLifeTypes
 open Shared
 open Shared.Utils
 
-type Model = { Grid: CellGrid }
+type Model = {
+    Grid: CellGrid
+    ElapsedTicks : int
+}
 
 type Msg = Tick
 
@@ -20,15 +23,21 @@ let todosApi =
 let init (): Model =
     let model = GetRandomCellGrid 10
     let grid = ToCellGrid model 10
-    let model = { Grid = grid }
+    let model = {
+        Grid = grid
+        ElapsedTicks = 0
+    }
     model
 
 
 let update (msg: Msg) (model: Model): Model =
+    let newTicks = model.ElapsedTicks + 1
     match msg with
     | Tick ->
         { model with
-              Grid = CalculateTick model.Grid }
+              Grid = CalculateTick model.Grid
+              ElapsedTicks = newTicks
+               }
 
 open Fable.React
 open Fable.React.Props
@@ -104,6 +113,11 @@ let view (model: Model) (dispatch: Msg -> unit) =
                                     Button.Color IsInfo
                                     Button.OnClick(fun _ -> dispatch Tick) ] [
                         str "Dispatch next Tick"
+                    ]
+                    Button.button [ Button.Size IsLarge
+                                    Button.Color IsGrey
+                                    Button.Disabled true ] [
+                        str ("Elapsed Ticks : " + (string model.ElapsedTicks))
                     ]
                 ]
             ]
