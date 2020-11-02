@@ -8,12 +8,11 @@ open Shared.GameOfLifeTypes
 open Shared
 open Shared.Utils
 
-type Model = {
-    Grid: CellGrid
-    ElapsedTicks : int
-}
+type Model = { Grid: CellGrid; ElapsedTicks: int }
 
-type Msg = Tick
+type Msg =
+    | Tick
+    | Restart
 
 let todosApi =
     Remoting.createApi ()
@@ -23,10 +22,7 @@ let todosApi =
 let init (): Model =
     let model = GetRandomCellGrid 10
     let grid = ToCellGrid model 10
-    let model = {
-        Grid = grid
-        ElapsedTicks = 0
-    }
+    let model = { Grid = grid; ElapsedTicks = 0 }
     model
 
 
@@ -36,8 +32,8 @@ let update (msg: Msg) (model: Model): Model =
     | Tick ->
         { model with
               Grid = CalculateTick model.Grid
-              ElapsedTicks = newTicks
-               }
+              ElapsedTicks = newTicks }
+    | Restart -> init()
 
 open Fable.React
 open Fable.React.Props
@@ -102,13 +98,12 @@ let view (model: Model) (dispatch: Msg -> unit) =
             ]
         ]
         Hero.body [] [
-                Columns.columns [] [
-                Column.column [  ] [
+            Columns.columns [] [
+                Column.column [] [
 
                     generateGrid model
                 ]
                 Column.column [ Column.Width(Screen.All, Column.Is2) ] [
-
                     Button.button [ Button.Size IsLarge
                                     Button.Color IsInfo
                                     Button.OnClick(fun _ -> dispatch Tick) ] [
@@ -118,6 +113,13 @@ let view (model: Model) (dispatch: Msg -> unit) =
                                     Button.Color IsGrey
                                     Button.Disabled true ] [
                         str ("Elapsed Ticks : " + (string model.ElapsedTicks))
+                    ]
+                    Button.button [ Button.Size IsLarge
+                                    Button.Color IsDanger
+                                    Button.OnClick(fun _ -> dispatch Restart
+
+                                        ) ] [
+                        str "Restart game"
                     ]
                 ]
             ]
