@@ -8,22 +8,29 @@ open Shared.GameOfLifeTypes
 open Shared
 open Shared.Utils
 
-type Model = { Grid: CellGrid; ElapsedTicks: int }
+type Model =
+    { Grid: CellGrid
+      ElapsedTicks: int
+      NewGridSize: int }
 
 type Msg =
     | Tick
     | Restart
+    | SetNewGridSize of int
 
 let todosApi =
     Remoting.createApi ()
     |> Remoting.withRouteBuilder Route.builder
     |> Remoting.buildProxy<ITodosApi>
 
-let init (): Model =
-    let model = GetRandomCellGrid 10
-    let grid = ToCellGrid model 10
-    let model = { Grid = grid; ElapsedTicks = 0 }
+let initWithSize size : Model =
+    let model = GetRandomCellGrid size
+    let grid = ToCellGrid model size
+    let model = { Grid = grid; ElapsedTicks = 0; NewGridSize = size }
     model
+let init (): Model =
+    initWithSize 10
+
 
 
 let update (msg: Msg) (model: Model): Model =
@@ -33,7 +40,9 @@ let update (msg: Msg) (model: Model): Model =
         { model with
               Grid = CalculateTick model.Grid
               ElapsedTicks = newTicks }
-    | Restart -> init()
+    | Restart -> initWithSize model.NewGridSize
+    | SetNewGridSize value ->
+        initWithSize value
 
 open Fable.React
 open Fable.React.Props
@@ -99,7 +108,7 @@ let view (model: Model) (dispatch: Msg -> unit) =
         ]
         Hero.body [] [
             Columns.columns [] [
-                Column.column [] [
+                Column.column [ Column.Width(Screen.All, Column.Is8) ] [
 
                     generateGrid model
                 ]
@@ -114,12 +123,26 @@ let view (model: Model) (dispatch: Msg -> unit) =
                                     Button.Disabled true ] [
                         str ("Elapsed Ticks : " + (string model.ElapsedTicks))
                     ]
+
                     Button.button [ Button.Size IsLarge
                                     Button.Color IsDanger
                                     Button.OnClick(fun _ -> dispatch Restart
 
                                         ) ] [
                         str "Restart game"
+                    ]
+                    br []
+                    div [] [
+                        h1 [ Style[FontSize 25
+                                   Color "black"
+                                   ]] [ str "Set the grid size:" ]
+                        input [ Class "input"
+                                Value model.NewGridSize
+                                Type "number"
+                                OnInput(fun ev ->
+                                    let intVal = int(ev.Value)
+                                    dispatch (SetNewGridSize intVal))
+                                    ]
                     ]
                 ]
             ]
