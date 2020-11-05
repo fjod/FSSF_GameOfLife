@@ -1,7 +1,5 @@
 module Index
 
-open System
-open Elmish
 open Fable.Remoting.Client
 open Fulma
 open Shared.GameOfLifeTypes
@@ -46,12 +44,12 @@ let update (msg: Msg) (model: Model): Model =
 
 open Fable.React
 open Fable.React.Props
-open Fulma
 
 let navBrand =
     Navbar.Brand.div [] [
         img [ Src "/favicon.png"; Alt "FSSF" ]
-        h1 [] [ str "Game of Life FSSF" ]
+        h1 [Style [FontSize 50 ]
+        ] [ str "Game of Life FSSF" ]
     ]
 
 
