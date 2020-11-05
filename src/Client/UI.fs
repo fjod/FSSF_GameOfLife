@@ -54,12 +54,11 @@ let navBrand =
         h1 [] [ str "Game of Life FSSF" ]
     ]
 
-let IsEqual (x: int) (y: int) = Math.Abs(x - y) = 0
+
 
 let renderView (cells: Cell list) x y =
     let cell =
         List.find (fun (c: Cell) -> (snd c).X = x && (snd c).Y = y) cells
-    //List.find (fun (c: Cell) -> IsEqual (snd c).X x && IsEqual (snd c).Y y) cells
 
     match fst cell with
     | Dead ->
