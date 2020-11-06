@@ -54,9 +54,9 @@ let navBrand =
 
 
 
-let renderView (cells: Cell list) x y =
+let renderView (cells: Cell [,]) x y =
     let cell =
-        List.find (fun (c: Cell) -> (snd c).X = x && (snd c).Y = y) cells
+        cells.[x,y]
 
     match fst cell with
     | Dead ->
@@ -76,8 +76,8 @@ let renderView (cells: Cell list) x y =
         ]
 
 let generateGrid (model: Model) =
-    let listOfCols = [ 0 .. model.Grid.Size - 1 ]
-    let listOfCols2 = [ 0 .. model.Grid.Size - 1 ]
+    let listOfCols = [ model.Grid.Size .. model.Grid.Size*2 - 1 ]
+    let listOfCols2 = [ model.Grid.Size .. model.Grid.Size*2 - 1 ]
 
     table [ Style [] ] [
         thead [] [
