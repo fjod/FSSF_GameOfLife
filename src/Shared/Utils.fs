@@ -76,6 +76,8 @@ let ChangeCellStateBasedOnNeighbours (cells: Option<Cell> list) (cell: Cell): Ce
     | (_, Alive) -> (DeadOnNextTick, snd cell)
     | _ -> (Dead, snd cell)
 
+let getArrayFromArrays (arrays: Cell[][]) (index:int):Cell[]=
+        arrays.[index]
 
 let calc2 (grid:CellGrid) =
     let workOnCell (cell:Cell) : Cell =
@@ -88,11 +90,10 @@ let calc2 (grid:CellGrid) =
     let workOnCells (cells: Cell[]) =
         Array.map workOnCell cells
 
-    let getArrayFromArrays (arrays: Cell[][]) (index:int):Cell[]=
-        arrays.[index]
 
 
-    let helper = [0..grid.Size]
+
+    let helper = [0..grid.Size*3]
     seq{
         for i in helper do
             getArrayFromArrays grid.Cells i |> workOnCells
@@ -101,6 +102,6 @@ let calc2 (grid:CellGrid) =
 
 let CalculateTick (grid: CellGrid): CellGrid =
     let gridCells =calc2 grid //convert from seq of cells to 2d array
-
-    ToCellGrid gridCells grid.Size
+    let gridAsList = Array.ofSeq gridCells
+    ToCellGrid gridAsList grid.Size
 
