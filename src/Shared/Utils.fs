@@ -14,10 +14,16 @@ let CreateRandomCell x y (rnd: System.Random): Cell =
 
 //create random grid which is bigger than actual field
 //https://math.stackexchange.com/questions/1699282/conways-game-of-life-borders-rules
-let GetRandomCellGrid size =
+let GetRandomCellGrid size : Cell [][]=
     let rnd = System.Random()
     let innerCreateCell i j = CreateRandomCell i j rnd
-    Array2D.init (size*3) (size*3) innerCreateCell
+    //Array2D.init (size*3) (size*3) innerCreateCell
+    let init1DArray (i:int) : Cell[]=
+        let createRandomCellWithOneArg index =
+            CreateRandomCell i index rnd
+        Array.init (size*3) createRandomCellWithOneArg
+    Array.init (size*3) init1DArray
+
 
 let ToCellGrid cells size: CellGrid =
     { Cells = cells
@@ -35,7 +41,7 @@ let GetNeighbourCells (cell: Cell) (cells: CellGrid): Option<Cell> list =
         | (var1, var2) when var1
                             >= cells.UpperBound
                             || var2 >= cells.UpperBound -> None
-        | _, _ -> Some(cells.Cells.[p.X,p.Y])
+        | _, _ -> Some(cells.Cells.[p.X].[p.Y])
 
     let Row = [ (snd cell).X - 1 .. (snd cell).X + 1 ]
     let Col = [ (snd cell).Y - 1 .. (snd cell).Y + 1 ]
@@ -78,11 +84,23 @@ let calc2 (grid:CellGrid) =
             | _ ->
                 let neighBours = GetNeighbourCells cell grid
                 ChangeCellStateBasedOnNeighbours neighBours cell
-    Array2D.map  workOnCell grid.Cells
+    //Array2D.map  workOnCell grid.Cells
+    let workOnCells (cells: Cell[]) =
+        Array.map workOnCell cells
 
+    let getArrayFromArrays (arrays: Cell[][]) (index:int):Cell[]=
+        arrays.[index]
+
+
+    let helper = [0..grid.Size]
+    seq{
+        for i in helper do
+            getArrayFromArrays grid.Cells i |> workOnCells
+    }
 
 
 let CalculateTick (grid: CellGrid): CellGrid =
-    let gridCells =calc2 grid
+    let gridCells =calc2 grid //convert from seq of cells to 2d array
+
     ToCellGrid gridCells grid.Size
 
