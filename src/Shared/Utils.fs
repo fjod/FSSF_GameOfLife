@@ -1,6 +1,5 @@
 module Shared.Utils
 
-
 open Shared.GameOfLifeTypes
 
 let CreatePoint (x: int) (y: int): Point = { X = x; Y = y }
@@ -8,30 +7,27 @@ let CreatePoint (x: int) (y: int): Point = { X = x; Y = y }
 let CreateCell x y isDead: Cell =
     if isDead then Dead, CreatePoint x y else Alive, CreatePoint x y
 
-
 let CreateRandomCell x y (rnd: System.Random): Cell =
     let isAlive = rnd.NextDouble() > 0.5
     CreateCell x y isAlive
 
 //create random grid which is bigger than actual field
 //https://math.stackexchange.com/questions/1699282/conways-game-of-life-borders-rules
-let GetRandomCellGrid size =
-    let correctSize = (size - 1) * 2
-    let invertSize = (size - 1) * -1
+let GetRandomCellGrid size: Cell [] [] =
     let rnd = System.Random()
-    seq {
-        for j in invertSize .. correctSize do
-            for i in invertSize .. correctSize -> CreateRandomCell i j rnd
-    }
-    |> List.ofSeq
+
+    let init1DArray (i: int): Cell [] =
+        let createRandomCellWithOneArg index = CreateRandomCell i index rnd
+        Array.init (size * 3) createRandomCellWithOneArg
+
+    Array.init (size * 3) init1DArray
+
 
 let ToCellGrid cells size: CellGrid =
     { Cells = cells
       Size = size
-      UpperBound = (size - 1) * 2
-      LowerBound = (size - 1) * -1 }
-
-let cellFinder _x _y (cell: Cell) = (snd cell).X = _x && (snd cell).Y = _y
+      UpperBound = size * 3
+      LowerBound = 0 }
 
 let GetNeighbourCells (cell: Cell) (cells: CellGrid): Option<Cell> list =
 
@@ -43,7 +39,7 @@ let GetNeighbourCells (cell: Cell) (cells: CellGrid): Option<Cell> list =
         | (var1, var2) when var1
                             >= cells.UpperBound
                             || var2 >= cells.UpperBound -> None
-        | _, _ -> Some(List.find (cellFinder p.X p.Y) cells.Cells)
+        | _, _ -> Some(cells.Cells.[p.X].[p.Y])
 
     let Row = [ (snd cell).X - 1 .. (snd cell).X + 1 ]
     let Col = [ (snd cell).Y - 1 .. (snd cell).Y + 1 ]
@@ -78,16 +74,25 @@ let ChangeCellStateBasedOnNeighbours (cells: Option<Cell> list) (cell: Cell): Ce
     | (_, Alive) -> (DeadOnNextTick, snd cell)
     | _ -> (Dead, snd cell)
 
-let testCalc (grid: CellGrid) =
+let calc2 (grid: CellGrid) =
+
+    let workOnCell (cell: Cell): Cell =
+        match fst cell with
+        | DeadOnNextTick -> (Dead, snd cell)
+        | _ ->
+            let neighBours = GetNeighbourCells cell grid
+            ChangeCellStateBasedOnNeighbours neighBours cell
+
+    let workOnCells (cells: Cell []) = Array.map workOnCell cells
+
     seq {
-        for currentCell in grid.Cells do
-            match fst currentCell with
-            | DeadOnNextTick -> (Dead, snd currentCell)
-            | _ ->
-                let neighBours = GetNeighbourCells currentCell grid
-                ChangeCellStateBasedOnNeighbours neighBours currentCell
+        for i in [ 0 .. grid.Size * 3 - 1 ] do
+            workOnCells grid.Cells.[i]
     }
 
+
 let CalculateTick (grid: CellGrid): CellGrid =
-    let gridCells = List.ofSeq (testCalc grid)
-    ToCellGrid gridCells grid.Size
+    let gridAsList = calc2 grid|> Array.ofSeq
+    ToCellGrid gridAsList grid.Size
+    //calc2 grid |> Array.ofSeq |> ToCellGrid grid.Size
+

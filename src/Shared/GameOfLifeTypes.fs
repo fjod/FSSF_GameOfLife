@@ -14,7 +14,7 @@ type Cell =    //Tuple
     CellStatus*Point
 
 type CellGrid =  //Record
-    { Cells: Cell list
+    { Cells: Cell [][]
       Size: int
       LowerBound : int
       UpperBound : int
