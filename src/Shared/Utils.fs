@@ -1,6 +1,5 @@
 module Shared.Utils
 
-
 open Shared.GameOfLifeTypes
 
 let CreatePoint (x: int) (y: int): Point = { X = x; Y = y }
@@ -14,21 +13,20 @@ let CreateRandomCell x y (rnd: System.Random): Cell =
 
 //create random grid which is bigger than actual field
 //https://math.stackexchange.com/questions/1699282/conways-game-of-life-borders-rules
-let GetRandomCellGrid size : Cell [][]=
+let GetRandomCellGrid size: Cell [] [] =
     let rnd = System.Random()
-    let innerCreateCell i j = CreateRandomCell i j rnd
-    //Array2D.init (size*3) (size*3) innerCreateCell
-    let init1DArray (i:int) : Cell[]=
-        let createRandomCellWithOneArg index =
-            CreateRandomCell i index rnd
-        Array.init (size*3) createRandomCellWithOneArg
-    Array.init (size*3) init1DArray
+
+    let init1DArray (i: int): Cell [] =
+        let createRandomCellWithOneArg index = CreateRandomCell i index rnd
+        Array.init (size * 3) createRandomCellWithOneArg
+
+    Array.init (size * 3) init1DArray
 
 
 let ToCellGrid cells size: CellGrid =
     { Cells = cells
       Size = size
-      UpperBound = size  * 3
+      UpperBound = size * 3
       LowerBound = 0 }
 
 let GetNeighbourCells (cell: Cell) (cells: CellGrid): Option<Cell> list =
@@ -76,32 +74,25 @@ let ChangeCellStateBasedOnNeighbours (cells: Option<Cell> list) (cell: Cell): Ce
     | (_, Alive) -> (DeadOnNextTick, snd cell)
     | _ -> (Dead, snd cell)
 
-let getArrayFromArrays (arrays: Cell[][]) (index:int):Cell[]=
-        arrays.[index]
+let calc2 (grid: CellGrid) =
 
-let calc2 (grid:CellGrid) =
-    let workOnCell (cell:Cell) : Cell =
+    let workOnCell (cell: Cell): Cell =
         match fst cell with
-            | DeadOnNextTick -> (Dead, snd cell)
-            | _ ->
-                let neighBours = GetNeighbourCells cell grid
-                ChangeCellStateBasedOnNeighbours neighBours cell
-    //Array2D.map  workOnCell grid.Cells
-    let workOnCells (cells: Cell[]) =
-        Array.map workOnCell cells
+        | DeadOnNextTick -> (Dead, snd cell)
+        | _ ->
+            let neighBours = GetNeighbourCells cell grid
+            ChangeCellStateBasedOnNeighbours neighBours cell
 
+    let workOnCells (cells: Cell []) = Array.map workOnCell cells
 
-
-
-    let helper = [0..grid.Size*3]
-    seq{
-        for i in helper do
-            getArrayFromArrays grid.Cells i |> workOnCells
+    seq {
+        for i in [ 0 .. grid.Size * 3 - 1 ] do
+            workOnCells grid.Cells.[i]
     }
 
 
 let CalculateTick (grid: CellGrid): CellGrid =
-    let gridCells =calc2 grid //convert from seq of cells to 2d array
-    let gridAsList = Array.ofSeq gridCells
+    let gridAsList = calc2 grid|> Array.ofSeq
     ToCellGrid gridAsList grid.Size
+    //calc2 grid |> Array.ofSeq |> ToCellGrid grid.Size
 

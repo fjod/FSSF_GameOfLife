@@ -54,9 +54,9 @@ let navBrand =
 
 
 
-let renderView (cells: Cell [,]) x y =
+let renderView (cells: Cell [][]) x y =
     let cell =
-        cells.[x,y]
+        cells.[x].[y]
 
     match fst cell with
     | Dead ->
