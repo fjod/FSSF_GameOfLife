@@ -83,16 +83,11 @@ let calc2 (grid: CellGrid) =
             let neighBours = GetNeighbourCells cell grid
             ChangeCellStateBasedOnNeighbours neighBours cell
 
-    let workOnCells (cells: Cell []) = Array.map workOnCell cells
-
     seq {
         for i in [ 0 .. grid.Size * 3 - 1 ] do
-            workOnCells grid.Cells.[i]
+            Array.map workOnCell grid.Cells.[i]
     }
 
-
 let CalculateTick (grid: CellGrid): CellGrid =
-    let gridAsList = calc2 grid|> Array.ofSeq
-    ToCellGrid gridAsList grid.Size
-    //calc2 grid |> Array.ofSeq |> ToCellGrid grid.Size
+    (calc2 grid |> Array.ofSeq |> ToCellGrid) grid.Size
 
